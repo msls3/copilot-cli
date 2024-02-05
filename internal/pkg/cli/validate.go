@@ -28,6 +28,8 @@ import (
 
 const basicNameRegex = `^[a-z][a-z0-9\-]+$`
 
+const basicNameRegexForAppName = `^[a-zA-Z][a-zA-Z0-9\-]+$`
+
 var errBasicNameRegexNotMatched = errors.New("value must have a length of at least 2, start with a letter, contain only lower-case letters, numbers, and hyphens, and have no consecutive or trailing hyphen")
 
 var (
@@ -175,7 +177,7 @@ func reservedWorkloadNames() map[string]bool {
 }
 
 func validateAppNameString(val interface{}) error {
-	if err := basicNameValidation(val); err != nil {
+	if err := basicNameValidationForAppName(val); err != nil {
 		return fmt.Errorf("application name %v is invalid: %w", val, err)
 	}
 	return nil
@@ -492,6 +494,24 @@ func basicNameValidation(val interface{}) error {
 	return nil
 }
 
+func basicNameValidationForAppName(val interface{}) error {
+	s, ok := val.(string)
+	if !ok {
+		return errValueNotAString
+	}
+	if s == "" {
+		return errValueEmpty
+	}
+	if len(s) > 255 {
+		return errValueTooLong
+	}
+	if !isCorrectFormatForAppName(s) {
+		return errBasicNameRegexNotMatched
+	}
+
+	return nil
+}
+
 func validateCron(sched string) error {
 	// If the schedule is wrapped in aws terms `rate()` or `cron()`, don't validate it--
 	// instead, pass it in as-is for serverside validation. AWS cron is weird (year field, nonstandard wildcards)
@@ -533,6 +553,26 @@ func validateDuration(duration string, min time.Duration) error {
 
 func isCorrectFormat(s string) bool {
 	valid, err := regexp.MatchString(basicNameRegex, s)
+	if err != nil {
+		return false // bubble up error?
+	}
+
+	// Check for bad punctuation (no consecutive dashes or dots)
+	formatMatch := punctuationRegExp.FindStringSubmatch(s)
+	if len(formatMatch) != 0 {
+		return false
+	}
+
+	trailingMatch := trailingPunctRegExp.FindStringSubmatch(s)
+	if len(trailingMatch) != 0 {
+		return false
+	}
+
+	return valid
+}
+
+func isCorrectFormatForAppName(s string) bool {
+	valid, err := regexp.MatchString(basicNameRegexForAppName, s)
 	if err != nil {
 		return false // bubble up error?
 	}
