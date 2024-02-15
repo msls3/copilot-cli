@@ -270,7 +270,7 @@ func (o *initAppOpts) validateAppName(name string) error {
 	}
 	var noSuchAppErr *config.ErrNoSuchApplication
 	if errors.As(err, &noSuchAppErr) {
-		roleName := fmt.Sprintf("%s-adminrole", name)
+		roleName := fmt.Sprintf("Sys%s-adminRole", name)
 		tags, err := o.iamRoleManager.ListRoleTags(roleName)
 		// NOTE: This is a best-effort attempt to check if the app exists in other regions.
 		// The error either indicates that the role does not exist, or not.

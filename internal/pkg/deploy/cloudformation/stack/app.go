@@ -230,7 +230,7 @@ func (c *AppStackConfig) StackSetDescription() string {
 }
 
 func (c *AppStackConfig) stackSetAdminRoleName() string {
-	return fmt.Sprintf("%s-adminrole", c.Name)
+	return fmt.Sprintf("Sys%s-adminRole", c.Name)
 }
 
 // StackSetAdminRoleARN returns the role ARN of the role used to administer the Application
@@ -246,7 +246,7 @@ func (c *AppStackConfig) StackSetAdminRoleARN(region string) (string, error) {
 // StackSetExecutionRoleName returns the role name of the role used to actually create
 // Application resources.
 func (c *AppStackConfig) StackSetExecutionRoleName() string {
-	return fmt.Sprintf("%s-executionrole", c.Name)
+	return fmt.Sprintf("Sys%s-executionRole", c.Name)
 }
 
 func (c *AppStackConfig) dnsDelegationAccounts() []string {
