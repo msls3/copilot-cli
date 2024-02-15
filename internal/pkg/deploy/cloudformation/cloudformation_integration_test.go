@@ -113,13 +113,13 @@ func Test_App_Infrastructure(t *testing.T) {
 		expectedResultsForKey := map[string]func(*awsCF.Output){
 			"ExecutionRoleARN": func(output *awsCF.Output) {
 				require.True(t,
-					strings.HasSuffix(*output.OutputValue, fmt.Sprintf("role/%s-executionrole", app.Name)),
-					fmt.Sprintf("ExecutionRoleARN should be named {app}-executionrole but was %s", *output.OutputValue))
+					strings.HasSuffix(*output.OutputValue, fmt.Sprintf("role/Sys%s-executionRole", app.Name)),
+					fmt.Sprintf("ExecutionRoleARN should be named Sys{app}-executionRole but was %s", *output.OutputValue))
 			},
 			"AdministrationRoleARN": func(output *awsCF.Output) {
 				require.True(t,
-					strings.HasSuffix(*output.OutputValue, fmt.Sprintf("role/%s-adminrole", app.Name)),
-					fmt.Sprintf("AdministrationRoleARN should be named {app}-adminrole but was %s", *output.OutputValue))
+					strings.HasSuffix(*output.OutputValue, fmt.Sprintf("role/Sys%s-adminRole", app.Name)),
+					fmt.Sprintf("AdministrationRoleARN should be named Sys{app}-adminRole but was %s", *output.OutputValue))
 			},
 			"TemplateVersion": func(output *awsCF.Output) {
 				require.Equal(t, *output.OutputValue, version.LatestTemplateVersion(),

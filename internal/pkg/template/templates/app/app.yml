@@ -46,16 +46,20 @@ Resources:
       PermissionsBoundary: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/{{.PermissionsBoundary}}'
       {{- end}} 
       Path: /
-      Policies:
-        - PolicyName: AssumeRole-AWSCloudFormationStackSetExecutionRole
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - sts:AssumeRole
-                Resource:
-                  - !Sub 'arn:${AWS::Partition}:iam::*:role/${ExecutionRoleName}'
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${AdminRoleName}Policy'
+  AdministrationRolePolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: !Sub '${AdminRoleName}Policy'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource:
+              - !Sub 'arn:${AWS::Partition}:iam::*:role/${ExecutionRoleName}'
   ExecutionRole:
     Metadata:
       'aws:copilot:description': 'An IAM role {{- if .PermissionsBoundary}} with permissions boundary {{.PermissionsBoundary}} {{- end}} assumed by the admin role to create ECR repositories, KMS keys, and S3 buckets'
@@ -74,57 +78,61 @@ Resources:
       PermissionsBoundary: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/{{.PermissionsBoundary}}'
       {{- end}}
       Path: /
-      Policies:
-      - PolicyName: ExecutionRolePolicy
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-              - Sid: StackSetRequiredPermissions # https://go.aws/3Sa5Tcf
-                Effect: Allow
-                Action:
-                  - cloudformation:*
-                  - s3:*
-                  - sns:*
-                Resource: "*"
-              - Sid: KeyAdminPermissions # https://go.aws/3BIqf7a
-                Effect: Allow
-                Action:
-                  - kms:Create*
-                  - kms:Describe*
-                  - kms:Enable*
-                  - kms:List*
-                  - kms:Put*
-                  - kms:Update*
-                  - kms:Revoke*
-                  - kms:Disable*
-                  - kms:Get*
-                  - kms:Delete*
-                  - kms:TagResource
-                  - kms:UntagResource
-                  - kms:ScheduleKeyDeletion
-                  - kms:CancelKeyDeletion
-                Resource: "*"
-              - Sid: ManageECRRepos
-                Effect: Allow
-                Action:
-                  - ecr:DescribeImageScanFindings
-                  - ecr:GetLifecyclePolicyPreview
-                  - ecr:CreateRepository
-                  - ecr:GetDownloadUrlForLayer
-                  - ecr:GetAuthorizationToken
-                  - ecr:ListTagsForResource
-                  - ecr:ListImages
-                  - ecr:DeleteLifecyclePolicy
-                  - ecr:DeleteRepository
-                  - ecr:SetRepositoryPolicy
-                  - ecr:BatchGetImage
-                  - ecr:DescribeImages
-                  - ecr:DescribeRepositories
-                  - ecr:BatchCheckLayerAvailability
-                  - ecr:GetRepositoryPolicy
-                  - ecr:GetLifecyclePolicy
-                  - ecr:TagResource
-                Resource: "*"
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${ExecutionRoleName}Policy'
+  ExecutionRolePolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: !Sub '${ExecutionRoleName}Policy'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+            - Sid: StackSetRequiredPermissions # https://go.aws/3Sa5Tcf
+              Effect: Allow
+              Action:
+                - cloudformation:*
+                - s3:*
+                - sns:*
+              Resource: "*"
+            - Sid: KeyAdminPermissions # https://go.aws/3BIqf7a
+              Effect: Allow
+              Action:
+                - kms:Create*
+                - kms:Describe*
+                - kms:Enable*
+                - kms:List*
+                - kms:Put*
+                - kms:Update*
+                - kms:Revoke*
+                - kms:Disable*
+                - kms:Get*
+                - kms:Delete*
+                - kms:TagResource
+                - kms:UntagResource
+                - kms:ScheduleKeyDeletion
+                - kms:CancelKeyDeletion
+              Resource: "*"
+            - Sid: ManageECRRepos
+              Effect: Allow
+              Action:
+                - ecr:DescribeImageScanFindings
+                - ecr:GetLifecyclePolicyPreview
+                - ecr:CreateRepository
+                - ecr:GetDownloadUrlForLayer
+                - ecr:GetAuthorizationToken
+                - ecr:ListTagsForResource
+                - ecr:ListImages
+                - ecr:DeleteLifecyclePolicy
+                - ecr:DeleteRepository
+                - ecr:SetRepositoryPolicy
+                - ecr:BatchGetImage
+                - ecr:DescribeImages
+                - ecr:DescribeRepositories
+                - ecr:BatchCheckLayerAvailability
+                - ecr:GetRepositoryPolicy
+                - ecr:GetLifecyclePolicy
+                - ecr:TagResource
+              Resource: "*"
 
   DNSDelegationRole:
     Metadata:

@@ -207,11 +207,11 @@ func TestAppParameters(t *testing.T) {
 	expectedParams := []*cloudformation.Parameter{
 		{
 			ParameterKey:   aws.String(appAdminRoleParamName),
-			ParameterValue: aws.String("testapp-adminrole"),
+			ParameterValue: aws.String("Systestapp-adminRole"),
 		},
 		{
 			ParameterKey:   aws.String(appExecutionRoleParamName),
-			ParameterValue: aws.String("testapp-executionrole"),
+			ParameterValue: aws.String("Systestapp-executionRole"),
 		},
 		{
 			ParameterKey:   aws.String(appDNSDelegatedAccountsKey),
