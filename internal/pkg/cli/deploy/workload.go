@@ -166,6 +166,7 @@ type GenerateCloudFormationTemplateOutput struct {
 
 // RepoName returns the name of a Copilot-managed ECR repository given an application and workload.
 func RepoName(app, workload string) string {
+	app = strings.ToLower(app)
 	return fmt.Sprintf("%s/%s", app, workload)
 }
 
